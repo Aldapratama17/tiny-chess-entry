@@ -242,13 +242,13 @@ def main():
             hist.append(hist[-1].move(Move(i, j, prom)))
         legal = set(g['legal_moves'])
         _t0 = _time.time()
-        searcher.node_cap = 42000
+        searcher.node_cap = 26000
         best, cand, d0 = (None, None, 1)
         try:
             for depth, gamma, score, move in searcher.search(hist):
                 if depth > d0:
                     best, d0 = (cand or best, depth)
-                if searcher.nodes >= 42000 and (best or cand):
+                if searcher.nodes >= 26000 and (best or cand):
                     break
                 if score >= gamma:
                     i, j = (move.i, move.j)
