@@ -178,7 +178,7 @@ class Searcher:
                 if move is not None and depth:
                     self.tp_move[pos] = move
                     if len(self.tp_move) > TS:
-                        del self.tp_move[next((k for k in self.tp_move if k != self.root))]
+                        del self.tp_move[next(iter(self.tp_move))]
                 break
         if depth and (not live) and all((pos.move(m).king_capture() for m in pos.gen_moves())):
             best = -ML if pos.rotate(nullmove=True).king_capture() else 0
@@ -240,13 +240,13 @@ def main():
                 i, j = (119 - i, 119 - j)
             hist.append(hist[-1].move(Move(i, j, prom)))
         legal = set(g['legal_moves'])
-        searcher.node_cap = 50000
+        searcher.node_cap = 42000
         best, cand, d0 = (None, None, 1)
         try:
             for depth, gamma, score, move in searcher.search(hist):
                 if depth > d0:
                     best, d0 = (cand or best, depth)
-                if searcher.nodes >= 50000 and (best or cand):
+                if searcher.nodes >= 42000 and (best or cand):
                     break
                 if score >= gamma:
                     i, j = (move.i, move.j)
