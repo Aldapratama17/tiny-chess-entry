@@ -352,35 +352,32 @@ def search_root(pos, budget=NODES_BUDGET):
     """iterative deepening with a node cap; returns the best move."""
     tt = {}
     nodes = [0]
-    reps = {pos.key: 1}
     moves = legal_moves(pos)
     if not moves:
         return None
     best = moves[0]
     for depth in range(1, 64):
         try:
-            best = root(pos, moves, depth, nodes, budget, tt, reps, best)
+            best = root(pos, moves, depth, nodes, budget, tt, best)
         except Abort:
             break
         moves = [best] + [m for m in moves if m != best]
     return best
 
-def root(pos, moves, depth, nodes, budget, tt, reps, tt_best):
+def root(pos, moves, depth, nodes, budget, tt, tt_best):
     alpha = -MATE
     best = None
     moves = [tt_best] + [m for m in moves if m != tt_best]
     for m in moves:
-        newreps = dict(reps)
         pos.make(m)
-        newreps[pos.key] = newreps.get(pos.key, 0) + 1
-        v = -negamax(pos, depth - 1, -MATE, -alpha, nodes, budget, tt, newreps, 1)
+        v = -negamax(pos, depth - 1, -MATE, -alpha, nodes, budget, tt, 1)
         pos.unmake()
         if v > alpha:
             alpha = v
             best = m
     return best if best else moves[0]
 
-def negamax(pos, depth, alpha, beta, nodes, budget, tt, reps, ply):
+def negamax(pos, depth, alpha, beta, nodes, budget, tt, ply):
     nodes[0] += 1
     if nodes[0] > budget:
         raise Abort()
@@ -399,7 +396,7 @@ def negamax(pos, depth, alpha, beta, nodes, budget, tt, reps, ply):
         pos.side = 'b' if pos.side == 'w' else 'w'
         pos.key ^= ZS ^ (ZEP[pos.ep] if pos.ep else 0)
         pos.ep = None
-        nv = -negamax(pos, depth - 3, -beta, -beta + 1, nodes, budget, tt, reps, ply + 1)
+        nv = -negamax(pos, depth - 3, -beta, -beta + 1, nodes, budget, tt, ply + 1)
         pos.side, pos.ep, pos.key = sv
         if nv >= beta:
             return nv
@@ -431,10 +428,8 @@ def negamax(pos, depth, alpha, beta, nodes, budget, tt, reps, ply):
     best = -MATE
     a0 = alpha
     for m in moves:
-        newreps = dict(reps)
         pos.make(m)
-        newreps[pos.key] = newreps.get(pos.key, 0) + 1
-        v = -negamax(pos, depth - 1, -beta, -alpha, nodes, budget, tt, newreps, ply + 1)
+        v = -negamax(pos, depth - 1, -beta, -alpha, nodes, budget, tt, ply + 1)
         pos.unmake()
         if v > best:
             best = v
@@ -499,7 +494,7 @@ def main():
             if best:
                 for depth in range(1, 64):
                     try:
-                        best = root(pos, moves, depth, nodes, NODES_BUDGET, tt, reps, best)
+                        best = root(pos, moves, depth, nodes, NODES_BUDGET, tt, best)
                     except Abort:
                         break
                     moves = [best] + [m for m in moves if m != best]
