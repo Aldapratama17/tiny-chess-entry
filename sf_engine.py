@@ -262,6 +262,5 @@ def main():
         g = post(base + '/move', {'game': g['game'], 'move': u})
         if g.get('result'):
             _sys.stderr.write('%s %s %s %s\n' % (g['game'], g['opponent'], g['result'], g['outcome']))
-    _sys.stderr.write(_json.dumps({k: g.get(k) for k in ('wins', 'draws', 'losses')}) + '\n')
 if __name__ == '__main__':
     main()
