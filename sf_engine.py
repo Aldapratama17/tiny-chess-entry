@@ -260,6 +260,8 @@ def main():
         if u not in legal:
             u = min(legal)
         g = post(base + '/move', {'game': g['game'], 'move': u})
+        if g.get('result'):
+            _sys.stderr.write('game %s %s: %s %s (%s) plies %s\n' % (g.get('game'), g.get('opponent'), g.get('result'), g.get('outcome'), g.get('reason'), g.get('plies')))
     _sys.stderr.write(_json.dumps({k: g.get(k) for k in ('wins', 'draws', 'losses')}) + '\n')
 if __name__ == '__main__':
     main()
